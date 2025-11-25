@@ -37,6 +37,7 @@ def mainPage() {
     dynamicPage(name: "mainPage", title: "Envi Heater Integration", install: true, uninstall: true) {
         section("Cloud Credentials") {
             input name: "enviUsername", type: "text", title: "Username (email)", required: true
+            input name: "traceEnable", type: "bool", title: "Enable Trace Logging (Very Verbose)", defaultValue: false
             input name: "enviPassword", type: "password", title: "Password", required: true
         }
         section("Options") {
@@ -67,6 +68,18 @@ def mainPage() {
             }
             
             input name: "btnRefresh", type: "button", title: "Refresh Now", submitOnChange: false
+        }
+        
+        section("Child Devices") {
+            def children = getChildDevices()
+            if(children) {
+                children.sort { it.label }.each { child ->
+                    def deviceLink = "<a href='/device/edit/${child.id}' target='_blank'>${child.label}</a>"
+                    paragraph deviceLink
+                }
+            } else {
+                paragraph "No child devices created yet. Click 'Refresh Now' to discover devices."
+            }
         }
     }
 }
